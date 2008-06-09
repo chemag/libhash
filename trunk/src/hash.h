@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (c) 2008, Jose Maria Gonzalez (chema@cs.berkeley.edu)
  * All rights reserved.
  *
@@ -29,6 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/* $Id$ */
 
 #ifndef _HASH_H_
 #define _HASH_H_
@@ -42,6 +42,7 @@
 typedef enum
 {
 	HASH_OBJECT_TYPE_CONNECTION = 0,
+	HASH_OBJECT_TYPE_ONESIDED_CONNECTION,
 	HASH_OBJECT_TYPE_UINT32,
 	HASH_OBJECT_TYPE_DOUBLE,
 	HASH_OBJECT_TYPE_CONNINFO,
@@ -147,7 +148,7 @@ int ht_raw_rebuild(hash_table_t* ht, uint32_t nbuckets);
 
 hash_table_item_t *ht_raw_lookup(hash_table_t* ht, void* key, void* yield);
 hash_table_item_t *ht_raw_get_next(hash_table_t* ht, hash_table_item_t *item,
-    void* key);
+		void* key);
 uint32_t ht_raw_get_entries(hash_table_t* ht, void* key);
 int ht_raw_exists(hash_table_t* ht, void* key, void* yield);
 int ht_raw_insert(hash_table_t* ht, void* key, void* yield);
@@ -164,10 +165,13 @@ typedef struct conn_t
 	uint16_t dport;
 	uint8_t proto;
 } conn_t;
-int conn_should_swap (conn_t *conn);
+int conn_should_swap (conn_t *conn, int onesided);
 int conncmp (void *o1, void *o2);
 int conncpy (void *o1, void *o2);
 char *conn_marshall (void *obj);
+int osconncmp (void *o1, void *o2);
+int osconncpy (void *o1, void *o2);
+char *osconn_marshall (void *obj);
 
 int uint32cmp (void *o1, void *o2);
 int uint32cpy (void *o1, void *o2);
@@ -212,6 +216,12 @@ static hash_object_t ho[HASH_OBJECT_TYPE_INVALID] =
 		/*.cmp =*/ conncmp,
 		/*.cpy =*/ conncpy,
 		/*.marshall =*/ conn_marshall},
+
+	{/*.type =*/ HASH_OBJECT_TYPE_ONESIDED_CONNECTION,
+		/*.len =*/ 13,
+		/*.cmp =*/ osconncmp,
+		/*.cpy =*/ osconncpy,
+		/*.marshall =*/ osconn_marshall},
 
 	{/*.type =*/ HASH_OBJECT_TYPE_UINT32,
 		/*.len =*/ sizeof(uint32_t),

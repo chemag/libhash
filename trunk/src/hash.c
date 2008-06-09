@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (c) 2008, Jose Maria Gonzalez (chema@cs.berkeley.edu)
  * All rights reserved.
  *
@@ -29,6 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/* $Id$ */
 
 
 
@@ -534,10 +534,15 @@ uint32_t ht_raw_remove(hash_table_t* ht, void* key, void* yield)
  * \brief Decide whether to swap the order of a connection object
  * 
  * \param[in] conn connection object
+ * \param[in] onesided whether the connection are one-sided or two-sided
  * \retval 1 if must swap, 0 if must not
  */
-int conn_should_swap (conn_t *conn)
+int conn_should_swap (conn_t *conn, int onesided)
 {
+	if ( onesided)
+		/* don't swap one-sided connections */
+		return 0;
+
 	if ( conn->saddr > conn->daddr )
 		return 1;
 	else if ( conn->saddr < conn->daddr )
@@ -553,11 +558,12 @@ int conn_should_swap (conn_t *conn)
  * 
  * \param[in] o1 first connection
  * \param[in] o2 second connection
+ * \param[in] onesided whether the connection are one-sided or two-sided
  * \retval int order (an integer less than, equal to, or greater than zero
  *         if o1 is found, respectively, to be less than, to match, or be
  *         greater than o2)
  */
-int conncmp (void *o1, void *o2)
+int gen_conncmp (void *o1, void *o2, int onesided)
 {
 	conn_t *conn1, *conn2;
 	int swap1, swap2;
@@ -586,8 +592,8 @@ int conncmp (void *o1, void *o2)
 	/* return some meaningful order */
 
 	/* check whether we need to swap any connection */
-	swap1 = conn_should_swap (conn1);
-	swap2 = conn_should_swap (conn2);
+	swap1 = conn_should_swap (conn1, onesided);
+	swap2 = conn_should_swap (conn2, onesided);
 
 	/* compare first addr */
 	word1 = (!swap1) ? conn1->saddr : conn1->daddr;
@@ -638,7 +644,7 @@ int conncmp (void *o1, void *o2)
  * \param[in] o2 destination connection
  * \retval 0 if OK, -1 if problems
  */
-int conncpy (void *o1, void *o2)
+int gen_conncpy (void *o1, void *o2)
 {
 	conn_t *conn1, *conn2;
 
@@ -668,9 +674,10 @@ int conncpy (void *o1, void *o2)
  * connection.
  * 
  * \param[in] obj connection
+ * \param[in] onesided whether the connection are one-sided or two-sided
  * \retval char* Marshalled connection
  */
-char *conn_marshall (void *obj)
+char *gen_conn_marshall (void *obj, int onesided)
 {
 	conn_t *conn;
 	int swap;
@@ -682,7 +689,7 @@ char *conn_marshall (void *obj)
 	conn = (conn_t *)obj;
 
 	/* check whether we need to swap src and dst */
-	swap = conn_should_swap (conn);
+	swap = conn_should_swap (conn, onesided);
 
 	/* marshall value */
 	/* order saddr and daddr to get the same hash for the two directions of
@@ -708,6 +715,43 @@ char *conn_marshall (void *obj)
 
 	return buf;
 }
+
+
+
+/* bi-directional connections */
+int conncpy (void *o1, void *o2)
+{
+	return gen_conncpy (o1, o2);
+}
+
+int conncmp (void *o1, void *o2)
+{
+	return gen_conncmp (o1, o2, 0);
+}
+
+char *conn_marshall (void *obj)
+{
+	return gen_conn_marshall (obj, 0);
+}
+
+
+
+/* one-sided connections */
+int osconncpy (void *o1, void *o2)
+{
+	return gen_conncpy (o1, o2);
+}
+
+int osconncmp (void *o1, void *o2)
+{
+	return gen_conncmp (o1, o2, 1);
+}
+
+char *osconn_marshall (void *obj)
+{
+	return gen_conn_marshall (obj, 1);
+}
+
 
 
 
