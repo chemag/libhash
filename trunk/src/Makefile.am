@@ -5,7 +5,7 @@ libhash_la_LIBADD = $(LIB_KPARTS)
 libhash_la_SOURCES = md5.c util.c hash.c version.c
 noinst_HEADERS = md5.h util.h hash.h
 
-CCOPT = -W -Wall -Wno-unused -pedantic
+CCOPT = -W -Wall -Wno-unused -pedantic -fPIC
 INCLS = -I. -I$(top_srcdir)/src -I$(srcdir) -I$(top_builddir)
 AM_CFLAGS = $(INCLS) $(CCOPT)
 AM_CPPFLAGS = $(INCLS) $(CCOPT)

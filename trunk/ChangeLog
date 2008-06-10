@@ -1,11 +1,14 @@
 
 Fri Jun  6 12:46:16 CEST 2008  Jose M. Gonzalez <chema@cs.berkeley.edu>
 	* ChangeLog: Started ChangeLog
-	* new: First private version
+	* new: First private version (0.1)
 
 Fri Jun  6 18:22:16 CEST 2008  Jose M. Gonzalez <chema@cs.berkeley.edu>
 	* new: Testing svnadmin
 
 Mon Jun  9 17:29:16 CEST 2008  Jose M. Gonzalez <chema@cs.berkeley.edu>
 	* new: Added one-sided connections
+
+Tue Jun 10 13:12:16 CEST 2008  Jose M. Gonzalez <chema@cs.berkeley.edu>
+	* fix: Added -fPIC for x86_64 machines
 
