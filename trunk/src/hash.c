@@ -173,9 +173,9 @@ int ht_raw_rebuild(hash_table_t* ht, uint32_t nbuckets)
 	fprintf(stderr, "%s Resizing hash table (%d->%d)\n",
 			__func__, ht->nbuckets, nbuckets);
 
-	/* create a new table */
+	/* create a new table with nbuckets buckets */
 	newht = ht_raw_init(ht->key, ht->yield, ht->copy_keys, ht->copy_yields,
-			ht->hf, ht->nbuckets, ht->max_bucket_occupancy_ratio);
+			ht->hf, nbuckets, ht->max_bucket_occupancy_ratio);
 
 	/* rehash items in the old bucket */
 	for (i=0;i<ht->nbuckets;++i)
