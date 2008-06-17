@@ -168,7 +168,7 @@ int ht_raw_rebuild(hash_table_t* ht, uint32_t nbuckets)
 	hash_table_item_t *item, *next;
 	uint32_t h, i;
 
-#ifdef DEBUG
+#ifdef DEBUG_HASHTABLE
 	/* log resizing */
 	fprintf(stderr, "%s Resizing hash table (%d->%d)\n",
 			__func__, ht->nbuckets, nbuckets);
