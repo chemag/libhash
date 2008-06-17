@@ -168,10 +168,11 @@ int ht_raw_rebuild(hash_table_t* ht, uint32_t nbuckets)
 	hash_table_item_t *item, *next;
 	uint32_t h, i;
 
-
+#ifdef DEBUG
 	/* log resizing */
 	fprintf(stderr, "%s Resizing hash table (%d->%d)\n",
 			__func__, ht->nbuckets, nbuckets);
+#endif
 
 	/* create a new table with nbuckets buckets */
 	newht = ht_raw_init(ht->key, ht->yield, ht->copy_keys, ht->copy_yields,
@@ -566,8 +567,11 @@ int conn_should_swap (conn_t *conn, int onesided)
 int gen_conncmp (void *o1, void *o2, int onesided)
 {
 	conn_t *conn1, *conn2;
+#define MAXIMIZE_PERFORMANCE
+#ifndef MAXIMIZE_PERFORMANCE
 	int swap1, swap2;
 	uint32_t word1, word2;
+#endif
 
 	/* get the connections */
 	conn1 = (conn_t *)o1;
@@ -578,17 +582,21 @@ int gen_conncmp (void *o1, void *o2, int onesided)
 			conn1->daddr == conn2->daddr &&
 			conn1->sport == conn2->sport &&
 			conn1->dport == conn2->dport &&
-			conn1->proto == conn2->proto)
+			conn1->proto == conn2->proto )
 		return 0;
 
 	/* same connection, opposite direction */
-	if ( conn1->saddr == conn2->daddr &&
+	if ( !onesided &&
+			conn1->saddr == conn2->daddr &&
 			conn1->daddr == conn2->saddr &&
 			conn1->sport == conn2->dport &&
 			conn1->dport == conn2->sport &&
-			conn1->proto == conn2->proto)
+			conn1->proto == conn2->proto )
 		return 0;
 
+#ifdef MAXIMIZE_PERFORMANCE
+		return -1;
+#else
 	/* return some meaningful order */
 
 	/* check whether we need to swap any connection */
@@ -633,6 +641,7 @@ int gen_conncmp (void *o1, void *o2, int onesided)
 	else if ( conn1->proto < conn2->proto )
 		return 1;
 	return 0;
+#endif
 }
 
 

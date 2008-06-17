@@ -12,3 +12,8 @@ Mon Jun  9 17:29:16 CEST 2008  Jose M. Gonzalez <chema@cs.berkeley.edu>
 Tue Jun 10 13:12:16 CEST 2008  Jose M. Gonzalez <chema@cs.berkeley.edu>
 	* fix: Added -fPIC for x86_64 machines
 
+Tue Jun 17 18:56:00 CEST 2008  Jose M. Gonzalez <chema@cs.berkeley.edu>
+	* fix: Added onesided comparison in gen_conncmp
+	* fix: We don't really use order in gen_conncmp, so we can just skip it
+	* fix: Stop spitting "Resizing hash table" messages
+
